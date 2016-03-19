@@ -5,10 +5,20 @@
 @(results: List[services.Github.Repository] = Nil)(implicit messages: Messages)
 
 @main(messages("home")) {
-  @results.map { x =>
+  @if(!results.isEmpty) {
     <div class="row">
       <div class="col-md-12">
-        @x
+        <h3>@messages("results")</h3>
+        <ul class="list-group">
+          @results.map { repo =>
+            <li class="list-group-item">
+              <a href="@routes.HomeController.show(repo.fullName)">@repo.fullName</a>
+              @repo.description.map { desc =>
+                <p class="small">@desc</p>
+              }
+            </li>
+          }
+        </ul>
       </div>
     </div>
   }

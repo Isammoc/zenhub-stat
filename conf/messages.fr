@@ -5,3 +5,5 @@ home=Accueil
 query.label=Veuillez entrer un nom de dépôt Github :
 query.placeholder=utilisateur/depot
 query.search=Rechercher
+
+results=Résultats

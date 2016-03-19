@@ -17,9 +17,9 @@ class Github(val token: String) {
 }
 
 object Github {
-  case class Repository(val user: String, val name: String, val url: String)
+  case class Repository(val fullName: String, val description: Option[String])
 
-  val repositoryReads: Reads[Repository] = ((JsPath \ "owner" \ "login" ).read[String] and (JsPath \ "name").read[String] and (JsPath \ "full_name").read[String])(Repository.apply _)
+  val repositoryReads: Reads[Repository] = ((JsPath \ "full_name").read[String] and (JsPath \ "description").readNullable[String])(Repository.apply _)
 
   val repositoriesReads: Reads[List[Repository]] = (JsPath \ "items").read[List[Repository]](Reads.list(repositoryReads))
 }

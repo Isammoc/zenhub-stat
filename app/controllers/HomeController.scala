@@ -31,4 +31,7 @@ class HomeController @Inject() (val messagesApi: MessagesApi, val github: servic
     }
   }
 
+  def show(name: String) = Action.async { implicit request =>
+    Future.successful(Ok(name))
+  }
 }
