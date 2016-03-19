@@ -7,3 +7,6 @@ query.placeholder=username/repository
 query.search=Search
 
 results=Results
+
+repository=Repository {0}
+contributors=Contributors

@@ -8,7 +8,7 @@ import play.api.i18n.I18nSupport
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import services.Github._
-import play.api.libs.json.Json
+import play.api.libs.json.{ Json, Reads }
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -26,12 +26,18 @@ class HomeController @Inject() (val messagesApi: MessagesApi, val github: servic
         repositoriesReads.reads(Json.parse(x)).fold(_ => ServiceUnavailable("XXX"), { data =>
           Logger.info(s"data => $data")
           Ok(views.html.index(data))
-        }
-      )}
+        })
+      }
     }
   }
 
-  def show(name: String) = Action.async { implicit request =>
-    Future.successful(Ok(name))
+  def show(user: String, name: String) = Action.async { implicit request =>
+    (for {
+      repositoryResult <- github.repository(user, name) map Json.parse map repositoryInfoReads.reads
+      contributorsResult <- github.repositoryContributors(user, name) map Json.parse map Reads.list(userReads).reads
+    } yield (for {
+      repository <- repositoryResult
+      contributors <- contributorsResult
+    } yield repository.copy(contributors = contributors)).fold(_ => InternalServerError("Parsing error"), info => Ok(views.html.repo(info)))).recover { case _ => ServiceUnavailable("Github down") }
   }
 }

@@ -7,3 +7,6 @@ query.placeholder=utilisateur/depot
 query.search=Rechercher
 
 results=Résultats
+
+repository=Dépôt {0}
+contributors=Contributeurs

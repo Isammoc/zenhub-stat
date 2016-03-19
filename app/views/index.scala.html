@@ -1,7 +1,3 @@
-@*
- * This template takes a single argument, a String containing a
- * message to display.
- *@
 @(results: List[services.Github.Repository] = Nil)(implicit messages: Messages)
 
 @main(messages("home")) {
@@ -12,7 +8,7 @@
         <ul class="list-group">
           @results.map { repo =>
             <li class="list-group-item">
-              <a href="@routes.HomeController.show(repo.fullName)">@repo.fullName</a>
+              <a href="@routes.HomeController.show(repo.ownerLogin, repo.name)">@repo.ownerLogin / @repo.name</a>
               @repo.description.map { desc =>
                 <p class="small">@desc</p>
               }
