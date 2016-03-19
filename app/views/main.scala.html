@@ -1,19 +1,13 @@
-@*
- * This template is called from the `index` template. This template
- * handles the rendering of the page header and body tags. It takes
- * two arguments, a `String` for the title of the page and an `Html`
- * object to insert into the body of the page.
- *@
-@(title: String)(content: Html)
+@(title: String)(content: Html)(implicit messages: Messages)
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@messages.lang.language">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>@title - ZenHub Stats</title>
+    <title>@title - @messages("project.name")</title>
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
@@ -27,13 +21,19 @@
   </head>
   <body>
 
-    <div class="container">
-      <div class="header clearfix">
-        <h3 class="text-muted"><a class="text-muted" href="@routes.HomeController.index">ZenHub Stats</a></h3>
+    <nav class="navbar">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="@routes.HomeController.index">@messages("project.name")</a>
+        </div>
       </div>
+    </nav>
 
+    <div class="container">
       @content
+    </div> <!-- /container -->
 
+    <div class="container">
       <footer class="footer">
         <div class="btn-toolbar" role="toolbar">
 	        <div class="btn-group">
@@ -43,8 +43,7 @@
 	        </div>
         </div>
       </footer>
-
-    </div> <!-- /container -->
+    </div>
 
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

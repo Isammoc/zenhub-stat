@@ -1,0 +1,3 @@
+project.name=ZenHub Stats
+
+home=Accueil
