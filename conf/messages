@@ -1,3 +1,7 @@
 project.name=ZenHub Stats
 
 home=Home
+
+query.label=Please, type a Github repository name:
+query.placeholder=username/repository
+query.search=Search
