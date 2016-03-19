@@ -9,12 +9,14 @@ A sample web application for interview process.
 
  * [Typesafe activator 1.3.7](https://www.lightbend.com/activator/download)
  * [git](https://git-scm.com/downloads)
+ * [Github API token](https://github.com/blog/1509-personal-api-tokens)
 
 ### First run
 
 ```bash
 git clone https://github.com/Isammoc/zenhub-stat.git
 cd zenhub-stat
+export GITHUB_TOKEN=<your personal github API token>
 activator run
 ```
 
@@ -41,3 +43,10 @@ activator run
 * [ ] Extending and polishing the user interface (Ajax, auto-suggest, animated results; ...) if you’re a UI guy.
 
 * [ ] Exposing these results through an API - if software design is your passion.
+
+
+## Links
+
+ * [Play!Framework](https://playframework.com)
+ * [Bootstrap](https://getbootstrap.com)
+ * [buhtig](https://github.com/mdread/buhtig)

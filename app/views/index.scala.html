@@ -2,23 +2,23 @@
  * This template takes a single argument, a String containing a
  * message to display.
  *@
-@(message: String)(implicit messages: Messages)
+@(results: List[services.Github.Repository] = Nil)(implicit messages: Messages)
 
-@*
- * Call the the `main` template with two arguments. The first
- * argument is a `String` with the title of the page, the second
- * argument is an `Html` object containing the body of the page.
- *@
 @main(messages("home")) {
-
-      <div class="jumbotron">
-        <h1>@messages("project.name")</h1>
-        <p class="lead">@messages("query.label")</p>
-        <form method="post" action="/">
-          <div class="form-group">
-            <input type="text" class="form-control" id="query" name="query" placeholder="@messages("query.placeholder")" />
-          </div>
-          <button type="submit" class="btn btn-lg btn-success" role="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> @messages("query.search")</a>
-        </form>
+  @results.map { x =>
+    <div class="row">
+      <div class="col-md-12">
+        @x
       </div>
+    </div>
+  }
+  <div class="jumbotron">
+    <p class="lead">@messages("query.label")</p>
+    <form method="get" action="/">
+      <div class="form-group">
+        <input type="text" class="form-control" id="query" name="q" placeholder="@messages("query.placeholder")" />
+      </div>
+      <button type="submit" class="btn btn-lg btn-success" role="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> @messages("query.search")</a>
+    </form>
+  </div>
 }
