@@ -1,4 +1,4 @@
-@(repo: services.Github.RepositoryInfo)(implicit messages: Messages)
+@(repo: services.Github.RepositoryInfo, commits: List[services.Github.Commit])(implicit messages: Messages)
 
 @main(messages("repository", (repo.owner.name + "/" + repo.name))) {
   <div class="row">
@@ -6,7 +6,7 @@
       <h1>@messages("repository", (repo.owner.name + "/" + repo.name))</h1>
       @repo.description.map { desc => <p class="small">@repo.description</p> }
     </div>
-    <div class="col-md-12">
+    <div class="col-md-12 contributors">
       <h3>@messages("contributors")</h3>
       <div class="row">
         @for(contributor <- repo.contributors) {
@@ -22,6 +22,21 @@
           </div>
         }
       </div>
+    </div> @* /.contributors*@
+    <div class="col-md-12 commits">
+      <h3>Commits</h3>
+      <div class="row">
+        @for(commit <- commits) {
+          <div class="col-md-12">
+            <p>@commit.date</p>
+            @commit.contributor.fold {
+              <p>Inconnu(e)</p>
+            }{ contrib =>
+              <p>@contrib.name</p>
+            }
+          </div>
+        }
+      </div> @* /.commits *@
     </div>
   </div>
 }

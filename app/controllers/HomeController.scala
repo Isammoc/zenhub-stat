@@ -9,6 +9,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import services.Github._
 import play.api.libs.json.{ Json, Reads }
+import services.Github
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -32,12 +33,27 @@ class HomeController @Inject() (val messagesApi: MessagesApi, val github: servic
   }
 
   def show(user: String, name: String) = Action.async { implicit request =>
-    (for {
+    //(github.repositoryCommits(user, name) map Json.parse map Json.prettyPrint ).map(s => Logger.info(s))
+    val futureData = for {
       repositoryResult <- github.repository(user, name) map Json.parse map repositoryInfoReads.reads
       contributorsResult <- github.repositoryContributors(user, name) map Json.parse map Reads.list(userReads).reads
-    } yield (for {
-      repository <- repositoryResult
-      contributors <- contributorsResult
-    } yield repository.copy(contributors = contributors)).fold(_ => InternalServerError("Parsing error"), info => Ok(views.html.repo(info)))).recover { case _ => ServiceUnavailable("Github down") }
+      commitsResult <- github.repositoryCommits(user, name) map Json.parse map repositoryCommitsReads.reads
+    } yield {
+        for {
+        	repository <- repositoryResult
+        	contributors <- contributorsResult
+        	repoCommits <- commitsResult
+        } yield (repository.copy(contributors = contributors), repoCommits)
+    }
+    futureData.map { _.fold ( { invalid =>
+    Logger.info(s"$invalid")
+      ServiceUnavailable("Bad data")
+    }
+    , { case (repo, commits) =>
+      Ok(views.html.repo(repo, commits))
+    })
+    }.recover({ case _ =>
+      ServiceUnavailable("Github down")
+    })
   }
 }
