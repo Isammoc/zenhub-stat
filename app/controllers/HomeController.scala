@@ -18,13 +18,9 @@ import play.api.libs.json.{ Json, Reads }
 class HomeController @Inject() (val messagesApi: MessagesApi, val github: services.Github) extends Controller with I18nSupport {
 
   def index(q: Option[String] = None) = Action.async { implicit request =>
-    Logger.info(s"q =>  $q")
     q.fold(Future.successful(Ok(views.html.index()))) { q =>
-      Logger.info(s"q = $q")
       github.searchRepositories(q).map { x =>
-        Logger.info(Json.prettyPrint(Json.parse(x)))
         repositoriesReads.reads(Json.parse(x)).fold(_ => ServiceUnavailable("XXX"), { data =>
-          Logger.info(s"data => $data")
           Ok(views.html.index(data))
         })
       }
@@ -32,12 +28,26 @@ class HomeController @Inject() (val messagesApi: MessagesApi, val github: servic
   }
 
   def show(user: String, name: String) = Action.async { implicit request =>
-    (for {
+    val futureData = for {
       repositoryResult <- github.repository(user, name) map Json.parse map repositoryInfoReads.reads
       contributorsResult <- github.repositoryContributors(user, name) map Json.parse map Reads.list(userReads).reads
-    } yield (for {
-      repository <- repositoryResult
-      contributors <- contributorsResult
-    } yield repository.copy(contributors = contributors)).fold(_ => InternalServerError("Parsing error"), info => Ok(views.html.repo(info)))).recover { case _ => ServiceUnavailable("Github down") }
+      commitsResult <- github.repositoryCommits(user, name) map Json.parse map repositoryCommitsReads.reads
+    } yield {
+        for {
+          repository <- repositoryResult
+          contributors <- contributorsResult
+          repoCommits <- commitsResult
+        } yield (repository.copy(contributors = contributors), repoCommits)
+    }
+    futureData.map { _.fold ( { invalid =>
+      Logger.info(s"$invalid")
+      ServiceUnavailable("Bad data")
+    }
+    , { case (repo, commits) =>
+      Ok(views.html.repo(repo, commits))
+    })
+    }.recover({ case _ =>
+      ServiceUnavailable("Github down")
+    })
   }
 }

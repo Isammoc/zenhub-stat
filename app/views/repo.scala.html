@@ -1,4 +1,4 @@
-@(repo: services.Github.RepositoryInfo)(implicit messages: Messages)
+@(repo: services.Github.RepositoryInfo, commits: List[services.Github.Commit])(implicit messages: Messages)
 
 @main(messages("repository", (repo.owner.name + "/" + repo.name))) {
   <div class="row">
@@ -6,7 +6,7 @@
       <h1>@messages("repository", (repo.owner.name + "/" + repo.name))</h1>
       @repo.description.map { desc => <p class="small">@repo.description</p> }
     </div>
-    <div class="col-md-12">
+    <div class="col-md-12 contributors">
       <h3>@messages("contributors")</h3>
       <div class="row">
         @for(contributor <- repo.contributors) {
@@ -22,6 +22,40 @@
           </div>
         }
       </div>
-    </div>
+    </div> @* /.contributors*@
+    <div class="col-md-12 commits">
+      @if(commits.size == 100) {
+        <h3>@messages("last100commits")</h3>
+      } else {
+        <h3>@messages("allNCommits", commits.size)</h3>
+      }
+      <table class="table table-striped table-condensed">
+        <thead>
+          <tr>
+            <th colspan="2">@messages("contributor")</th>
+            <th>@messages("commitsCount")</th>
+          </tr>
+        </thead>
+        <tbody>
+          @defining(commits.groupBy(_.contributor).map { case (a,b) => (a, b.size) }.toList.sortBy(-_._2)) { groupCommits =>
+            @for(group <- groupCommits) {
+              <tr>
+                @group._1 match {
+                  case Left(simple) => {
+                    <td><div class="img-thumbnail img-responsive">?</div></td>
+                    <td>@simple.name</td>
+                  }
+                  case Right(contrib) => {
+                    <td><img class="img-thumbnail img-responsive" style="max-height: 3em" src="@contrib.avatar"></img></td>
+                    <td>@contrib.name</td>
+                  }
+                }
+                <td>@group._2</td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div> @* /.commits *@
   </div>
 }

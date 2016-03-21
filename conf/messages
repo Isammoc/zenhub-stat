@@ -10,3 +10,7 @@ results=Results
 
 repository=Repository {0}
 contributors=Contributors
+last100commits=Last 100 commits
+allNcommits=All {0} commits
+contributor=Contributor
+commitsCount=Commits count
